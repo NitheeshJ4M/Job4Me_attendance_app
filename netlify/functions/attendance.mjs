@@ -3,9 +3,9 @@ export default async (request) => {
     return Response.json(
       {
         success: false,
-        message: "Method not allowed."
+        message: "Method not allowed.",
       },
-      { status: 405 }
+      { status: 405 },
     );
   }
 
@@ -20,9 +20,9 @@ export default async (request) => {
           success: false,
           title: "❌ Invalid QR Code",
           name: learnerId,
-          message: "This is not a valid learner ID."
+          message: "This is not a valid learner ID.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,16 +35,16 @@ export default async (request) => {
 
     const form = new URLSearchParams({
       learnerId,
-      secret: backendSecret
+      secret: backendSecret,
     });
 
     const response = await fetch(appsScriptUrl, {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
       },
       body: form.toString(),
-      redirect: "follow"
+      redirect: "follow",
     });
 
     const text = await response.text();
@@ -58,7 +58,7 @@ export default async (request) => {
     }
 
     return Response.json(result, {
-      status: result.success ? 200 : 400
+      status: result.success ? 200 : 400,
     });
   } catch (error) {
     console.error(error);
@@ -67,9 +67,9 @@ export default async (request) => {
       {
         success: false,
         title: "Connection Error",
-        message: "Attendance could not be recorded."
+        message: error.message || "Attendance could not be recorded.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };
