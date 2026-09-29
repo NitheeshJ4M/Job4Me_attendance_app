@@ -33,17 +33,19 @@ export default async (request) => {
       throw new Error("Server configuration is incomplete.");
     }
 
-    const form = new URLSearchParams({
-      learnerId,
-      secret: backendSecret,
-    });
+    const url = new URL(appsScriptUrl);
 
-    const response = await fetch(appsScriptUrl, {
-      method: "POST",
+    url.searchParams.set("action", "attendance");
+
+    url.searchParams.set("learnerId", learnerId);
+
+    url.searchParams.set("secret", backendSecret);
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        Accept: "application/json",
       },
-      body: form.toString(),
       redirect: "follow",
     });
 
