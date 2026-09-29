@@ -20,6 +20,8 @@ let lastScannedAt = 0;
 startButton.addEventListener("click", startScanner);
 stopButton.addEventListener("click", stopScanner);
 
+// START CAMERA
+
 async function startScanner() {
   if (scannerRunning) return;
 
@@ -30,18 +32,27 @@ async function startScanner() {
 
   try {
     await scanner.start(
-      { facingMode: "environment" },
+      {
+        facingMode: "environment",
+      },
       {
         fps: 15,
-        qrbox: { width: 300, height: 300 },
+        qrbox: {
+          width: 300,
+          height: 300,
+        },
       },
       handleQrSuccess,
-      () => {},
+      () => {
+        // Ignore normal scanning errors
+      },
     );
 
     scannerRunning = true;
+
     startButton.disabled = true;
     stopButton.disabled = false;
+
     setSystemStatus("Camera ready");
   } catch (error) {
     console.error(error);
@@ -60,6 +71,8 @@ async function startScanner() {
   }
 }
 
+// STOP CAMERA
+
 async function stopScanner() {
   if (!scanner || !scannerRunning) return;
 
@@ -76,8 +89,11 @@ async function stopScanner() {
 
   startButton.disabled = false;
   stopButton.disabled = true;
+
   setSystemStatus("Stopped");
 }
+
+// QR SUCCESS
 
 async function handleQrSuccess(decodedText) {
   if (processingScan) return;
@@ -91,21 +107,33 @@ async function handleQrSuccess(decodedText) {
       name: "",
       detail: "No learner ID was found.",
     });
+
     return;
   }
 
   const now = Date.now();
 
-  // Prevent the same QR from immediately checking the learner back out.
+  // Prevent the same learner being scanned
+  // twice immediately.
   if (learnerId === lastScannedCode && now - lastScannedAt < 15000) {
     return;
   }
 
   lastScannedCode = learnerId;
   lastScannedAt = now;
+
   processingScan = true;
 
   setSystemStatus("Recording attendance...");
+
+  // Show immediate feedback
+  showResult({
+    type: "success",
+    title: "QR detected",
+    name: learnerId,
+    detail: "Recording attendance...",
+  });
+
   await pauseScanner();
 
   try {
@@ -113,12 +141,20 @@ async function handleQrSuccess(decodedText) {
 
     showResult({
       type: result.success ? "success" : "error",
+
       title: result.title || "Attendance updated",
+
       name: result.name || learnerId,
+
       detail: result.time
         ? `${result.session ? result.session + " • " : ""}${result.time}`
         : result.message || "",
     });
+
+    // Speak only if attendance succeeded
+    if (result.success) {
+      speakAttendance(result);
+    }
   } catch (error) {
     console.error(error);
 
@@ -130,33 +166,48 @@ async function handleQrSuccess(decodedText) {
     });
   }
 
-  window.setTimeout(resetScanner, 3000);
+  // Return to camera after confirmation
+  window.setTimeout(resetScanner, 2500);
 }
+
+// READ LEARNER ID FROM QR
 
 function extractLearnerId(value) {
   const text = String(value || "").trim();
 
   if (!text) return "";
 
+  // Supports old QR codes that contain
+  // URLs such as ?id=J4M_001
   try {
     const url = new URL(text);
+
     const idFromUrl = url.searchParams.get("id");
 
-    if (idFromUrl) return idFromUrl.trim();
+    if (idFromUrl) {
+      return idFromUrl.trim();
+    }
   } catch {
-    // The QR is not a URL. Use its contents as the learner ID.
+    // Not a URL.
+    // Use QR contents directly.
   }
 
   return text;
 }
 
+// SEND ATTENDANCE TO NETLIFY FUNCTION
+
 async function sendAttendanceToBackend(learnerId) {
   const response = await fetch(API_URL, {
     method: "POST",
+
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ learnerId }),
+
+    body: JSON.stringify({
+      learnerId,
+    }),
   });
 
   const result = await response.json().catch(() => null);
@@ -170,8 +221,12 @@ async function sendAttendanceToBackend(learnerId) {
   return result;
 }
 
+// PAUSE CAMERA
+
 async function pauseScanner() {
-  if (!scanner || !scannerRunning) return;
+  if (!scanner || !scannerRunning) {
+    return;
+  }
 
   try {
     scanner.pause(true);
@@ -180,28 +235,39 @@ async function pauseScanner() {
   }
 }
 
+// RESET CAMERA AFTER CHECK-IN / CHECK-OUT
+
 function resetScanner() {
   hideResult();
+
   processingScan = false;
 
   if (scanner && scannerRunning) {
     try {
       scanner.resume();
+
       setSystemStatus("Camera ready");
     } catch (error) {
       console.warn(error);
+
       setSystemStatus("Ready");
     }
   }
 }
 
+// SHOW RESULT
+
 function showResult({ type, title, name, detail }) {
   resultCard.classList.remove("hidden", "success", "error");
+
   resultCard.classList.add(type === "error" ? "error" : "success");
 
   resultIcon.textContent = type === "error" ? "×" : "✓";
+
   resultTitle.textContent = title;
+
   resultName.textContent = name || "";
+
   resultDetail.textContent = detail || "";
 
   resultCard.scrollIntoView({
@@ -210,11 +276,58 @@ function showResult({ type, title, name, detail }) {
   });
 }
 
+// HIDE RESULT
+
 function hideResult() {
   resultCard.classList.add("hidden");
+
   resultCard.classList.remove("success", "error");
 }
 
+// SYSTEM STATUS
+
 function setSystemStatus(text) {
   systemStatus.textContent = text;
+}
+
+// VOICE ANNOUNCEMENT
+
+function speakAttendance(result) {
+  // Check browser support
+  if (!("speechSynthesis" in window)) {
+    console.warn("Text-to-speech is not supported.");
+
+    return;
+  }
+
+  // Stop any previous voice
+  window.speechSynthesis.cancel();
+
+  let message = "";
+
+  // CHECK IN
+  if (result.action === "checkin") {
+    message = `Welcome ${result.name}. `;
+  }
+
+  // CHECK OUT
+  if (result.action === "checkout") {
+    message = `Goodbye ${result.name}. ` + `Have a nice day.`;
+  }
+
+  if (!message) return;
+
+  const speech = new SpeechSynthesisUtterance(message);
+
+  // British English
+  speech.lang = "en-GB";
+
+  // Slightly slower for clarity
+  speech.rate = 0.95;
+
+  speech.pitch = 1;
+
+  speech.volume = 1;
+
+  window.speechSynthesis.speak(speech);
 }
