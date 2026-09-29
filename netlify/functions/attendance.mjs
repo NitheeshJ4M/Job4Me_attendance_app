@@ -54,7 +54,7 @@ export default async (request) => {
     try {
       result = JSON.parse(text);
     } catch {
-      throw new Error("Google Apps Script returned an invalid response.");
+      throw new Error("Apps Script response: " + text.substring(0, 250));
     }
 
     return Response.json(result, {
