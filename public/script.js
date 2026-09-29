@@ -33,10 +33,10 @@ async function startScanner() {
       { facingMode: "environment" },
       {
         fps: 15,
-        qrbox: { width: 300, height: 300 }
+        qrbox: { width: 300, height: 300 },
       },
       handleQrSuccess,
-      () => {}
+      () => {},
     );
 
     scannerRunning = true;
@@ -53,7 +53,7 @@ async function startScanner() {
       type: "error",
       title: "Camera could not start",
       name: "",
-      detail: "Allow camera permission and use the deployed HTTPS site."
+      detail: "Allow camera permission and use the deployed HTTPS site.",
     });
 
     setSystemStatus("Camera error");
@@ -89,7 +89,7 @@ async function handleQrSuccess(decodedText) {
       type: "error",
       title: "Invalid QR code",
       name: "",
-      detail: "No learner ID was found."
+      detail: "No learner ID was found.",
     });
     return;
   }
@@ -97,10 +97,7 @@ async function handleQrSuccess(decodedText) {
   const now = Date.now();
 
   // Prevent the same QR from immediately checking the learner back out.
-  if (
-    learnerId === lastScannedCode &&
-    now - lastScannedAt < 15000
-  ) {
+  if (learnerId === lastScannedCode && now - lastScannedAt < 15000) {
     return;
   }
 
@@ -120,7 +117,7 @@ async function handleQrSuccess(decodedText) {
       name: result.name || learnerId,
       detail: result.time
         ? `${result.session ? result.session + " • " : ""}${result.time}`
-        : result.message || ""
+        : result.message || "",
     });
   } catch (error) {
     console.error(error);
@@ -129,7 +126,7 @@ async function handleQrSuccess(decodedText) {
       type: "error",
       title: "Attendance was not recorded",
       name: learnerId,
-      detail: "Please try again."
+      detail: error.message || "Please try again.",
     });
   }
 
@@ -157,16 +154,16 @@ async function sendAttendanceToBackend(learnerId) {
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ learnerId })
+    body: JSON.stringify({ learnerId }),
   });
 
   const result = await response.json().catch(() => null);
 
   if (!response.ok || !result) {
     throw new Error(
-      result?.message || `Attendance server returned ${response.status}`
+      result?.message || `Attendance server returned ${response.status}`,
     );
   }
 
@@ -209,7 +206,7 @@ function showResult({ type, title, name, detail }) {
 
   resultCard.scrollIntoView({
     behavior: "smooth",
-    block: "center"
+    block: "center",
   });
 }
 
