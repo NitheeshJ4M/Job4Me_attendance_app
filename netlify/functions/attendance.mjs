@@ -36,9 +36,7 @@ export default async (request) => {
     const url = new URL(appsScriptUrl);
 
     url.searchParams.set("action", "attendance");
-
     url.searchParams.set("learnerId", learnerId);
-
     url.searchParams.set("secret", backendSecret);
 
     const response = await fetch(url.toString(), {
