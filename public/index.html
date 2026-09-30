@@ -1,68 +1,99 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0f172a" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>J4M Attendance Scanner</title>
+    <title>J4M Attendance Login</title>
 
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-</head>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+      }
 
-<body>
-  <main class="app-shell">
+      .login-card {
+        width: min(90%, 380px);
+        background: white;
+        padding: 32px;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+      }
 
-    <header class="app-header">
-      <div>
-        <p class="eyebrow">Job4Me</p>
-        <h1>Attendance Scanner</h1>
-        <p class="subtitle">Scan a learner QR code to check in or check out.</p>
-      </div>
+      h1 {
+        text-align: center;
+        margin-top: 0;
+      }
 
-      <div class="status-pill" id="systemStatus">Ready</div>
-    </header>
+      .field {
+        margin-bottom: 18px;
+      }
 
-    <section class="scanner-card">
-      <div class="scanner-heading">
-        <h2>Scan learner QR</h2>
-        <p>Hold the learner QR code inside the camera frame.</p>
-      </div>
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
 
-      <div id="reader" class="reader"></div>
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 13px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
 
-      <div class="scanner-actions">
-        <button id="startButton" class="primary-button" type="button">
-          Start camera
-        </button>
+      button {
+        width: 100%;
+        padding: 14px;
+        font-size: 17px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+      }
 
-        <button id="stopButton" class="secondary-button" type="button" disabled>
-          Stop camera
-        </button>
-      </div>
-    </section>
+      #loginMessage {
+        text-align: center;
+        min-height: 24px;
+        margin-top: 16px;
+      }
+    </style>
+  </head>
 
-    <section class="result-card hidden" id="resultCard" aria-live="polite">
-      <div class="result-icon" id="resultIcon">✓</div>
+  <body>
+    <main class="login-card">
+      <h1>J4M Attendance</h1>
 
-      <div>
-        <h2 id="resultTitle">Attendance updated</h2>
-        <p class="result-name" id="resultName"></p>
-        <p class="result-detail" id="resultDetail"></p>
-      </div>
-    </section>
+      <form id="loginForm">
+        <div class="field">
+          <label for="staffId"> Staff ID </label>
 
-    <section class="help-card">
-      <h3>Ready for learner cards</h3>
-      <p>
-        Each learner QR should contain only the learner ID,
-        for example <strong>J4M_001</strong>.
-      </p>
-    </section>
+          <input id="staffId" type="text" autocomplete="username" required />
+        </div>
 
-  </main>
+        <div class="field">
+          <label for="password"> Password </label>
 
-  <script src="script.js"></script>
-</body>
+          <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+
+        <button type="submit">Sign in</button>
+
+        <p id="loginMessage"></p>
+      </form>
+    </main>
+
+    <script src="login.js"></script>
+  </body>
 </html>

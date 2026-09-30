@@ -1,4 +1,18 @@
+import { verifySession } from "./_auth.mjs";
+
 export default async (request) => {
+  if (!verifySession(request)) {
+    return Response.json(
+      {
+        success: false,
+        title: "Authentication required",
+        message: "Please sign in again.",
+      },
+      {
+        status: 401,
+      },
+    );
+  }
   if (request.method !== "POST") {
     return Response.json(
       {

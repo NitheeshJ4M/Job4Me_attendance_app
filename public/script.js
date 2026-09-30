@@ -7,6 +7,7 @@ const resultIcon = document.getElementById("resultIcon");
 const resultTitle = document.getElementById("resultTitle");
 const resultName = document.getElementById("resultName");
 const resultDetail = document.getElementById("resultDetail");
+const logoutButton = document.getElementById("logoutButton");
 
 const API_URL = "/.netlify/functions/attendance";
 
@@ -392,4 +393,34 @@ function speakAttendance(result) {
   speech.volume = 1;
 
   window.speechSynthesis.speak(speech);
+}
+
+// Check Authentication
+
+checkAuthentication();
+
+async function checkAuthentication() {
+  try {
+    const response = await fetch("/.netlify/functions/me", {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      window.location.replace("/");
+    }
+  } catch {
+    window.location.replace("/");
+  }
+}
+
+// Logout
+
+logoutButton?.addEventListener("click", logout);
+
+async function logout() {
+  await fetch("/.netlify/functions/logout", {
+    method: "POST",
+  });
+
+  window.location.replace("/");
 }
