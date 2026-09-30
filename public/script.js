@@ -20,7 +20,9 @@ let lastScannedAt = 0;
 startButton.addEventListener("click", startScanner);
 stopButton.addEventListener("click", stopScanner);
 
+// =====================================================
 // START CAMERA
+// =====================================================
 
 async function startScanner() {
   if (scannerRunning) return;
@@ -71,7 +73,9 @@ async function startScanner() {
   }
 }
 
+// =====================================================
 // STOP CAMERA
+// =====================================================
 
 async function stopScanner() {
   if (!scanner || !scannerRunning) return;
@@ -93,7 +97,9 @@ async function stopScanner() {
   setSystemStatus("Stopped");
 }
 
+// =====================================================
 // QR SUCCESS
+// =====================================================
 
 async function handleQrSuccess(decodedText) {
   if (processingScan) return;
@@ -115,6 +121,7 @@ async function handleQrSuccess(decodedText) {
 
   // Prevent the same learner being scanned
   // twice immediately.
+
   if (learnerId === lastScannedCode && now - lastScannedAt < 15000) {
     return;
   }
@@ -127,6 +134,7 @@ async function handleQrSuccess(decodedText) {
   setSystemStatus("Recording attendance...");
 
   // Show immediate feedback
+
   showResult({
     type: "success",
     title: "QR detected",
@@ -149,9 +157,12 @@ async function handleQrSuccess(decodedText) {
       detail: result.time
         ? `${result.session ? result.session + " • " : ""}${result.time}`
         : result.message || "",
+
+      birthday: result.birthday === true,
     });
 
     // Speak only if attendance succeeded
+
     if (result.success) {
       speakAttendance(result);
     }
@@ -167,18 +178,22 @@ async function handleQrSuccess(decodedText) {
   }
 
   // Return to camera after confirmation
+
   window.setTimeout(resetScanner, 2500);
 }
 
+// =====================================================
 // READ LEARNER ID FROM QR
+// =====================================================
 
 function extractLearnerId(value) {
   const text = String(value || "").trim();
 
   if (!text) return "";
 
-  // Supports old QR codes that contain
-  // URLs such as ?id=J4M_001
+  // Supports old QR codes containing URLs
+  // such as ?id=J4M_001
+
   try {
     const url = new URL(text);
 
@@ -189,13 +204,15 @@ function extractLearnerId(value) {
     }
   } catch {
     // Not a URL.
-    // Use QR contents directly.
+    // Use the QR contents directly.
   }
 
   return text;
 }
 
+// =====================================================
 // SEND ATTENDANCE TO NETLIFY FUNCTION
+// =====================================================
 
 async function sendAttendanceToBackend(learnerId) {
   const response = await fetch(API_URL, {
@@ -221,7 +238,9 @@ async function sendAttendanceToBackend(learnerId) {
   return result;
 }
 
+// =====================================================
 // PAUSE CAMERA
+// =====================================================
 
 async function pauseScanner() {
   if (!scanner || !scannerRunning) {
@@ -235,7 +254,9 @@ async function pauseScanner() {
   }
 }
 
+// =====================================================
 // RESET CAMERA AFTER CHECK-IN / CHECK-OUT
+// =====================================================
 
 function resetScanner() {
   hideResult();
@@ -255,14 +276,22 @@ function resetScanner() {
   }
 }
 
+// =====================================================
 // SHOW RESULT
+// =====================================================
 
-function showResult({ type, title, name, detail }) {
+function showResult({ type, title, name, detail, birthday = false }) {
   resultCard.classList.remove("hidden", "success", "error");
 
   resultCard.classList.add(type === "error" ? "error" : "success");
 
-  resultIcon.textContent = type === "error" ? "×" : "✓";
+  // Special birthday icon
+
+  if (birthday) {
+    resultIcon.textContent = "🎂";
+  } else {
+    resultIcon.textContent = type === "error" ? "×" : "✓";
+  }
 
   resultTitle.textContent = title;
 
@@ -276,7 +305,9 @@ function showResult({ type, title, name, detail }) {
   });
 }
 
+// =====================================================
 // HIDE RESULT
+// =====================================================
 
 function hideResult() {
   resultCard.classList.add("hidden");
@@ -284,33 +315,62 @@ function hideResult() {
   resultCard.classList.remove("success", "error");
 }
 
+// =====================================================
 // SYSTEM STATUS
+// =====================================================
 
 function setSystemStatus(text) {
   systemStatus.textContent = text;
 }
 
+// =====================================================
 // VOICE ANNOUNCEMENT
+// =====================================================
 
 function speakAttendance(result) {
-  // Check browser support
+  // Check whether browser supports
+  // text-to-speech
+
   if (!("speechSynthesis" in window)) {
     console.warn("Text-to-speech is not supported.");
 
     return;
   }
 
-  // Stop any previous voice
+  // Stop previous announcement
+
   window.speechSynthesis.cancel();
 
   let message = "";
 
+  // ===================================================
   // CHECK IN
+  // ===================================================
+
   if (result.action === "checkin") {
-    message = `Welcome ${result.name}. `;
+    // -----------------------------------------------
+    // BIRTHDAY CHECK-IN
+    // -----------------------------------------------
+
+    if (result.birthday === true) {
+      message =
+        `Happy birthday ${result.name}! ` +
+        `Welcome. ` +
+        `We hope you have a wonderful day.`;
+    }
+
+    // -----------------------------------------------
+    // NORMAL CHECK-IN
+    // -----------------------------------------------
+    else {
+      message = `Welcome ${result.name}.`;
+    }
   }
 
+  // ===================================================
   // CHECK OUT
+  // ===================================================
+
   if (result.action === "checkout") {
     message = `Goodbye ${result.name}. ` + `Have a nice day.`;
   }
@@ -320,9 +380,11 @@ function speakAttendance(result) {
   const speech = new SpeechSynthesisUtterance(message);
 
   // British English
+
   speech.lang = "en-GB";
 
   // Slightly slower for clarity
+
   speech.rate = 0.95;
 
   speech.pitch = 1;
