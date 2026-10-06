@@ -51,12 +51,16 @@ button {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--primary);
+  color: var(--text);
 }
 
 h1 {
   margin: 0;
   font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.attendance {
+  color: #15803d;
 }
 
 .subtitle {
@@ -165,6 +169,19 @@ h1 {
 .secondary-button {
   background: #e2e8f0;
   color: var(--text);
+}
+
+.logout-button {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.logout-button {
+  background: var(--danger);
+  color: white;
 }
 
 button:disabled {

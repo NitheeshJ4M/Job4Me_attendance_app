@@ -40,10 +40,7 @@ async function startScanner() {
       },
       {
         fps: 15,
-        qrbox: {
-          width: 300,
-          height: 300,
-        },
+        aspectRatio: 1.333333,
       },
       handleQrSuccess,
       () => {
@@ -361,13 +358,13 @@ function speakAttendance(result) {
 
     // Normal check-in
     else {
-      message = `Welcome ${firstName}.`;
+      message = `Welcome ${firstName}.` + `Please Sign in`;
     }
   }
 
   // Check-out
   if (result.action === "checkout") {
-    message = `Goodbye ${firstName}. ` + `Have a nice day.`;
+    message = `Goodbye ${firstName}. ` + `Please Sign Out.`;
   }
 
   if (!message) return;
@@ -390,7 +387,6 @@ function speakAttendance(result) {
 }
 
 // Check Authentication
-
 checkAuthentication();
 
 async function checkAuthentication() {

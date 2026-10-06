@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f172a" />
 
-    <title>J4M Attendance Scanner</title>
+    <title>Job4Me Attendance Scanner</title>
 
     <link rel="stylesheet" href="style.css" />
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -14,21 +14,28 @@
   <body>
     <main class="app-shell">
       <header class="app-header">
-        <div>
-          <p class="eyebrow">Job4Me</p>
-          <h1>Attendance Scanner</h1>
-          <p class="subtitle">
-            Scan a learner QR code to check in or check out.
-          </p>
-        </div>
+        <div class="brand-row">
+          <img
+            src="logo/job4me_transparent.png"
+            alt="Job4Me Logo"
+            class="site-logo"
+          />
 
+          <div class="brand-text">
+            <h1>Job4Me Newcastle</h1>
+
+            <p class="eyebrow">ATTENDANCE SCANNER</p>
+
+            <p class="subtitle">Scan your QR code to check in or check out.</p>
+          </div>
+        </div>
         <div class="status-pill" id="systemStatus">Ready</div>
       </header>
 
       <section class="scanner-card">
         <div class="scanner-heading">
-          <h2>Scan learner QR</h2>
-          <p>Hold the learner QR code inside the camera frame.</p>
+          <h2>Welcome!</h2>
+          <p>Please hold the QR code inside the camera frame.</p>
         </div>
 
         <div id="reader" class="reader"></div>
@@ -46,7 +53,9 @@
           >
             Stop camera
           </button>
-          <button id="logoutButton" type="button">Log out</button>
+          <button id="logoutButton" class="logout-button" type="button">
+            Log out
+          </button>
         </div>
       </section>
 
