@@ -347,33 +347,27 @@ function speakAttendance(result) {
   // ===================================================
   // CHECK IN
   // ===================================================
-
+  const firstName = String(result.name || "")
+    .trim()
+    .split(/\s+/)[0];
   if (result.action === "checkin") {
-    // -----------------------------------------------
-    // BIRTHDAY CHECK-IN
-    // -----------------------------------------------
-
+    // Birthday check-in
     if (result.birthday === true) {
       message =
-        `Happy birthday ${result.name}! ` +
+        `Happy birthday ${firstName}! ` +
         `Welcome. ` +
         `We hope you have a wonderful day.`;
     }
 
-    // -----------------------------------------------
-    // NORMAL CHECK-IN
-    // -----------------------------------------------
+    // Normal check-in
     else {
-      message = `Welcome ${result.name}.`;
+      message = `Welcome ${firstName}.`;
     }
   }
 
-  // ===================================================
-  // CHECK OUT
-  // ===================================================
-
+  // Check-out
   if (result.action === "checkout") {
-    message = `Goodbye ${result.name}. ` + `Have a nice day.`;
+    message = `Goodbye ${firstName}. ` + `Have a nice day.`;
   }
 
   if (!message) return;
