@@ -67,7 +67,7 @@ async function startScanner() {
       type: "error",
       title: "Camera could not start",
       name: "",
-      detail: "Allow camera permission and use the deployed HTTPS site.",
+      detail: "Please allow camera permission to use the scanner.",
     });
 
     setSystemStatus("Camera error");
