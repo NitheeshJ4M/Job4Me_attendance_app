@@ -100,17 +100,42 @@ h1 {
   line-height: 1.5;
 }
 
-.reader {
-  width: 100%;
-  min-height: 340px;
-  margin-top: 18px;
-  border-radius: 18px;
-  overflow: hidden;
-  background: #0b1220;
+#reader {
+  width: 100% !important;
+  height: 300px !important;
+  max-height: 300px !important;
+
+  overflow: hidden !important;
+
+  border-radius: 16px;
+  background: #111;
+  border: none !important;
 }
 
-.reader video {
-  object-fit: cover;
+/* html5-qrcode creates this after camera starts */
+#reader__scan_region {
+  width: 100% !important;
+  height: 300px !important;
+  max-height: 300px !important;
+
+  overflow: hidden !important;
+}
+
+/* Force the actual camera video to stay inside */
+#reader video {
+  width: 100% !important;
+  height: 300px !important;
+
+  object-fit: cover !important;
+
+  border-radius: 16px;
+}
+
+/* Keep scanner canvas/overlay inside too */
+#reader canvas {
+  width: 100% !important;
+  height: 300px !important;
+  object-fit: cover !important;
 }
 
 .scanner-actions {
