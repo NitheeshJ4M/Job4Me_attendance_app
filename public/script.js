@@ -36,7 +36,7 @@ async function startScanner() {
   try {
     await scanner.start(
       {
-        facingMode: "environment",
+        facingMode: "user",
       },
       {
         fps: 15,
