@@ -5,21 +5,30 @@
 :root {
   --page-bg: #f4f7fb;
   --surface: #ffffff;
+
   --text: #0f172a;
   --muted: #64748b;
+
   --border: #dbe3ee;
+
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
+
+  --brand-green: #188447;
   --success: #15803d;
   --danger: #b91c1c;
+
   --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
 }
+
+/* Page */
 
 html,
 body {
   margin: 0;
   min-height: 100%;
   font-family: Arial, Helvetica, sans-serif;
+
   background: var(--page-bg);
   color: var(--text);
 }
@@ -37,55 +46,93 @@ button {
   margin: 0 auto;
 }
 
+/* Header */
+
 .app-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
   gap: 24px;
   margin-bottom: 24px;
 }
 
-.eyebrow {
-  margin: 0 0 6px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text);
+.brand-row {
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
 }
 
+.site-logo {
+  width: 120px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  min-width: 0;
+}
+
+.brand-text h1,
 h1 {
   margin: 0;
+
   font-size: clamp(2rem, 5vw, 3rem);
 }
 
-.attendance {
-  color: #15803d;
+.brand-text h1 {
+  color: var(--brand-green);
+}
+
+.eyebrow {
+  margin: 4px 0 8px;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  color: var(--primary);
 }
 
 .subtitle {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
+
   color: var(--muted);
+
   font-size: 1.05rem;
   line-height: 1.5;
 }
 
 .status-pill {
   flex: 0 0 auto;
+
   padding: 10px 14px;
-  border-radius: 999px;
+
   border: 1px solid var(--border);
+
+  border-radius: 999px;
+
   background: var(--surface);
+
   color: var(--muted);
+
   font-weight: 700;
 }
+
+/* Cards */
 
 .scanner-card,
 .result-card,
 .help-card {
   background: var(--surface);
+
   border: 1px solid var(--border);
+
   border-radius: 22px;
+
   box-shadow: var(--shadow);
 }
 
@@ -104,28 +151,33 @@ h1 {
   line-height: 1.5;
 }
 
+/* Camera */
+
 #reader {
   width: 100% !important;
+
   height: 295px !important;
   max-height: 295px !important;
 
   overflow: hidden !important;
 
-  border-radius: 16px;
-  background: #111;
   border: none !important;
+  border-radius: 16px;
+
+  background: #111;
 }
 
-/* html5-qrcode creates this after camera starts */
+/* Created automatically by html5-qrcode */
+
 #reader__scan_region {
   width: 100% !important;
+
   height: 295px !important;
   max-height: 295px !important;
 
   overflow: hidden !important;
 }
 
-/* Force the actual camera video to stay inside */
 #reader video {
   width: 100% !important;
   height: 295px !important;
@@ -135,26 +187,39 @@ h1 {
   border-radius: 16px;
 }
 
-/* Keep scanner canvas/overlay inside too */
 #reader canvas {
   width: 100% !important;
   height: 295px !important;
+
   object-fit: cover !important;
 }
 
+/* Scanner buttons */
+
 .scanner-actions {
   display: flex;
+
   gap: 12px;
+
   margin-top: 18px;
 }
 
 .primary-button,
-.secondary-button {
+.secondary-button,
+.logout-button {
   border: 0;
   border-radius: 14px;
+
   padding: 14px 20px;
+
   font-weight: 700;
+
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.15s ease;
 }
 
 .primary-button {
@@ -172,16 +237,14 @@ h1 {
 }
 
 .logout-button {
-  border: 0;
-  border-radius: 14px;
-  padding: 12px 18px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.logout-button {
   background: var(--danger);
   color: white;
+}
+
+.primary-button:active,
+.secondary-button:active,
+.logout-button:active {
+  transform: scale(0.98);
 }
 
 button:disabled {
@@ -189,10 +252,14 @@ button:disabled {
   opacity: 0.5;
 }
 
+/* Scan result */
+
 .result-card {
   display: flex;
   align-items: center;
+
   gap: 18px;
+
   margin-top: 18px;
   padding: 22px;
 }
@@ -208,12 +275,17 @@ button:disabled {
 .result-icon {
   display: grid;
   place-items: center;
+
   width: 58px;
   height: 58px;
+
   flex: 0 0 58px;
+
   border-radius: 50%;
+
   background: #dcfce7;
   color: var(--success);
+
   font-size: 2rem;
   font-weight: 800;
 }
@@ -229,23 +301,31 @@ button:disabled {
 
 .result-name {
   margin: 8px 0 0;
+
   font-size: 1.25rem;
   font-weight: 700;
 }
 
 .result-detail {
   margin: 5px 0 0;
+
   color: var(--muted);
 }
+
+/* Help */
 
 .help-card {
   margin-top: 18px;
   padding: 20px 22px;
 }
 
+/* Utility */
+
 .hidden {
   display: none;
 }
+
+/* Tablet / mobile */
 
 @media (max-width: 600px) {
   body {
@@ -253,19 +333,51 @@ button:disabled {
   }
 
   .app-header {
-    flex-direction: column;
+    gap: 14px;
+  }
+
+  .brand-row {
+    gap: 12px;
+  }
+
+  .site-logo {
+    width: 70px;
+  }
+
+  .brand-text h1 {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .status-pill {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .scanner-card {
+    padding: 16px;
+  }
+
+  #reader,
+  #reader__scan_region,
+  #reader video,
+  #reader canvas {
+    height: 260px !important;
+    max-height: 260px !important;
   }
 
   .scanner-actions {
-    flex-direction: column;
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .primary-button,
-  .secondary-button {
+  .secondary-button,
+  .logout-button {
     width: 100%;
-  }
-
-  .reader {
-    min-height: 300px;
   }
 }
