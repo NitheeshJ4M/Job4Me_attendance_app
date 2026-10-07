@@ -2,21 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <meta name="theme-color" content="#0f172a" />
 
-    <title>Job4Me Attendance Scanner</title>
+    <title>Job4Me Attendance</title>
 
     <link rel="stylesheet" href="style.css" />
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   </head>
 
   <body>
     <main class="app-shell">
+      <!-- Header -->
+
       <header class="app-header">
         <div class="brand-row">
           <img
-            src="logo/job4me_transparent.png"
+            src="job4me_transparent.png"
             alt="Job4Me Logo"
             class="site-logo"
           />
@@ -24,57 +27,100 @@
           <div class="brand-text">
             <h1>Job4Me Newcastle</h1>
 
-            <p class="eyebrow">ATTENDANCE SCANNER</p>
+            <p class="eyebrow">ATTENDANCE</p>
 
-            <p class="subtitle">Scan your QR code to check in or check out.</p>
+            <p class="subtitle">
+              Enter your learner number to check in or check out.
+            </p>
           </div>
         </div>
+
         <div class="status-pill" id="systemStatus">Ready</div>
       </header>
+
+      <!-- Attendance keypad -->
 
       <section class="scanner-card">
         <div class="scanner-heading">
           <h2>Welcome!</h2>
-          <p>Please hold the QR code inside the camera frame.</p>
+
+          <p>Please enter your learner number.</p>
         </div>
 
-        <div id="reader" class="reader"></div>
+        <!-- Learner ID display -->
 
-        <div class="scanner-actions">
-          <button id="startButton" class="primary-button" type="button">
-            Start camera
-          </button>
+        <div class="learner-id-display" aria-label="Learner ID">
+          <span class="id-prefix"> J4M_ </span>
+
+          <span class="id-number" id="enteredDigits">_ _</span>
+        </div>
+
+        <!-- Number pad -->
+
+        <div class="number-pad" id="numberPad">
+          <button type="button" class="number-button" data-number="1">1</button>
+
+          <button type="button" class="number-button" data-number="2">2</button>
+
+          <button type="button" class="number-button" data-number="3">3</button>
+
+          <button type="button" class="number-button" data-number="4">4</button>
+
+          <button type="button" class="number-button" data-number="5">5</button>
+
+          <button type="button" class="number-button" data-number="6">6</button>
+
+          <button type="button" class="number-button" data-number="7">7</button>
+
+          <button type="button" class="number-button" data-number="8">8</button>
+
+          <button type="button" class="number-button" data-number="9">9</button>
 
           <button
-            id="stopButton"
-            class="secondary-button"
             type="button"
-            disabled
+            class="keypad-action clear-button"
+            id="clearButton"
           >
-            Stop camera
+            Clear
           </button>
-          <button id="logoutButton" class="logout-button" type="button">
-            Log out
+
+          <button type="button" class="number-button" data-number="0">0</button>
+
+          <button
+            type="button"
+            class="keypad-action backspace-button"
+            id="backspaceButton"
+            aria-label="Delete last number"
+          >
+            ⌫
           </button>
         </div>
+
+        <!-- Submit -->
+
+        <button id="submitButton" class="submit-button" type="button">
+          Check in / out
+        </button>
+
+        <!-- Logout -->
+
+        <button id="logoutButton" class="logout-button" type="button">
+          Log out
+        </button>
       </section>
+
+      <!-- Attendance popup -->
 
       <section class="result-card hidden" id="resultCard" aria-live="polite">
         <div class="result-icon" id="resultIcon">✓</div>
 
-        <div>
+        <div class="result-content">
           <h2 id="resultTitle">Attendance updated</h2>
+
           <p class="result-name" id="resultName"></p>
+
           <p class="result-detail" id="resultDetail"></p>
         </div>
-      </section>
-
-      <section class="help-card">
-        <h3>Ready for learner cards</h3>
-        <p>
-          Each learner QR should contain only the learner ID, for example
-          <strong>J4M_001</strong>.
-        </p>
       </section>
     </main>
 

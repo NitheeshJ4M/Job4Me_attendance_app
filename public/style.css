@@ -15,6 +15,7 @@
   --primary-dark: #1d4ed8;
 
   --brand-green: #188447;
+
   --success: #15803d;
   --danger: #b91c1c;
 
@@ -27,6 +28,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
+
   font-family: Arial, Helvetica, sans-serif;
 
   background: var(--page-bg);
@@ -34,7 +36,7 @@ body {
 }
 
 body {
-  padding: 24px;
+  padding: 18px;
 }
 
 button {
@@ -50,23 +52,27 @@ button {
 
 .app-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
 
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 18px;
+
+  margin-bottom: 16px;
 }
 
 .brand-row {
   display: flex;
   align-items: center;
 
-  gap: 20px;
+  gap: 16px;
+
+  min-width: 0;
 }
 
 .site-logo {
-  width: 120px;
+  width: 100px;
   height: auto;
+
   flex-shrink: 0;
 }
 
@@ -74,42 +80,38 @@ button {
   min-width: 0;
 }
 
-.brand-text h1,
-h1 {
+.brand-text h1 {
   margin: 0;
 
-  font-size: clamp(2rem, 5vw, 3rem);
-}
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
 
-.brand-text h1 {
   color: var(--brand-green);
 }
 
 .eyebrow {
-  margin: 4px 0 8px;
+  margin: 3px 0 5px;
 
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
 
   letter-spacing: 0.08em;
-  text-transform: uppercase;
 
   color: var(--primary);
 }
 
 .subtitle {
-  margin: 8px 0 0;
+  margin: 0;
 
   color: var(--muted);
 
-  font-size: 1.05rem;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
 .status-pill {
   flex: 0 0 auto;
 
-  padding: 10px 14px;
+  padding: 9px 13px;
 
   border: 1px solid var(--border);
 
@@ -119,14 +121,19 @@ h1 {
 
   color: var(--muted);
 
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
-/* Cards */
+/* Attendance card */
 
-.scanner-card,
-.result-card,
-.help-card {
+.scanner-card {
+  width: min(500px, 100%);
+
+  margin: 0 auto;
+
+  padding: 18px;
+
   background: var(--surface);
 
   border: 1px solid var(--border);
@@ -136,248 +143,447 @@ h1 {
   box-shadow: var(--shadow);
 }
 
-.scanner-card {
-  padding: 22px;
+.scanner-heading {
+  text-align: center;
 }
 
-.scanner-heading h2,
-.help-card h3 {
-  margin-top: 0;
+.scanner-heading h2 {
+  margin: 0 0 5px;
+
+  font-size: 1.55rem;
 }
 
-.scanner-heading p,
-.help-card p {
+.scanner-heading p {
+  margin: 0 0 14px;
+
   color: var(--muted);
-  line-height: 1.5;
+
+  font-size: 0.95rem;
+
+  line-height: 1.4;
 }
 
-/* Camera */
+/* Learner ID display */
 
-#reader {
-  width: 100% !important;
-
-  height: 295px !important;
-  max-height: 295px !important;
-
-  overflow: hidden !important;
-
-  border: none !important;
-  border-radius: 16px;
-
-  background: #111;
-}
-
-/* Created automatically by html5-qrcode */
-
-#reader__scan_region {
-  width: 100% !important;
-
-  height: 295px !important;
-  max-height: 295px !important;
-
-  overflow: hidden !important;
-}
-
-#reader video {
-  width: 100% !important;
-  height: 295px !important;
-
-  object-fit: cover !important;
-
-  border-radius: 16px;
-}
-
-#reader canvas {
-  width: 100% !important;
-  height: 295px !important;
-
-  object-fit: cover !important;
-}
-
-/* Scanner buttons */
-
-.scanner-actions {
+.learner-id-display {
   display: flex;
 
-  gap: 12px;
+  align-items: center;
+  justify-content: center;
 
-  margin-top: 18px;
+  min-height: 64px;
+
+  margin-bottom: 14px;
+
+  padding: 10px 16px;
+
+  border: 2px solid var(--border);
+
+  border-radius: 16px;
+
+  background: #f8fafc;
+
+  font-size: 2rem;
+  font-weight: 800;
+
+  letter-spacing: 0.05em;
 }
 
-.primary-button,
-.secondary-button,
-.logout-button {
-  border: 0;
+.id-prefix {
+  color: var(--brand-green);
+  margin-right: 9px;
+}
+
+.id-number {
+  min-width: 92px;
+
+  color: var(--text);
+}
+
+/* Number pad */
+
+.number-pad {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 8px;
+}
+
+.number-button,
+.keypad-action {
+  min-height: 58px;
+
+  border: 1px solid var(--border);
+
   border-radius: 14px;
 
-  padding: 14px 20px;
+  background: #ffffff;
+
+  color: var(--text);
 
   font-weight: 700;
 
   cursor: pointer;
 
+  user-select: none;
+
+  touch-action: manipulation;
+
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease,
+    border-color 0.15s ease;
+}
+
+.number-button {
+  font-size: 1.55rem;
+}
+
+.number-button:hover {
+  background: #f1f5f9;
+
+  border-color: #cbd5e1;
+}
+
+.number-button:active,
+.keypad-action:active {
+  transform: scale(0.96);
+}
+
+/* Clear and delete */
+
+.keypad-action {
+  font-size: 0.95rem;
+
+  background: #f1f5f9;
+}
+
+.clear-button {
+  color: var(--muted);
+}
+
+.backspace-button {
+  color: var(--text);
+
+  font-size: 1.5rem;
+}
+
+/* Check in/out button */
+
+.submit-button {
+  width: 100%;
+
+  min-height: 50px;
+
+  margin-top: 12px;
+
+  padding: 12px 20px;
+
+  border: 0;
+
+  border-radius: 14px;
+
+  background: var(--primary);
+
+  color: white;
+
+  font-size: 1.05rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  touch-action: manipulation;
+
   transition:
     background 0.2s ease,
-    opacity 0.2s ease,
-    transform 0.15s ease;
+    transform 0.1s ease;
 }
 
-.primary-button {
-  background: var(--primary);
-  color: white;
-}
-
-.primary-button:hover {
+.submit-button:hover {
   background: var(--primary-dark);
 }
 
-.secondary-button {
-  background: #e2e8f0;
-  color: var(--text);
+.submit-button:active {
+  transform: scale(0.98);
 }
+
+/* Logout button */
 
 .logout-button {
-  background: var(--danger);
-  color: white;
+  width: 100%;
+
+  min-height: 44px;
+
+  margin-top: 8px;
+
+  padding: 10px 20px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  color: var(--danger);
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  touch-action: manipulation;
+
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
 }
 
-.primary-button:active,
-.secondary-button:active,
+.logout-button:hover {
+  background: #fef2f2;
+}
+
 .logout-button:active {
   transform: scale(0.98);
 }
 
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-/* Scan result */
+/* Attendance popup */
 
 .result-card {
+  position: fixed;
+
+  top: 18px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  z-index: 9999;
+
   display: flex;
   align-items: center;
 
-  gap: 18px;
+  gap: 15px;
 
-  margin-top: 18px;
-  padding: 22px;
+  width: min(500px, calc(100% - 28px));
+
+  padding: 16px 18px;
+
+  background: #ffffff;
+
+  border: 2px solid var(--border);
+
+  border-radius: 18px;
+
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.22);
 }
+
+/* Success popup */
 
 .result-card.success {
-  border-color: #bbf7d0;
+  background: #f0fdf4;
+
+  border-color: #22c55e;
 }
 
+/* Error popup */
+
 .result-card.error {
-  border-color: #fecaca;
+  background: #fef2f2;
+
+  border-color: #ef4444;
 }
+
+/* Popup icon */
 
 .result-icon {
   display: grid;
   place-items: center;
 
-  width: 58px;
-  height: 58px;
+  width: 52px;
+  height: 52px;
 
-  flex: 0 0 58px;
+  flex: 0 0 52px;
 
   border-radius: 50%;
 
   background: #dcfce7;
+
   color: var(--success);
 
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
 }
 
 .result-card.error .result-icon {
   background: #fee2e2;
+
   color: var(--danger);
+}
+
+/* Popup text */
+
+.result-content {
+  min-width: 0;
 }
 
 .result-card h2 {
   margin: 0;
+
+  font-size: 1.25rem;
 }
 
 .result-name {
-  margin: 8px 0 0;
+  margin: 5px 0 0;
 
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
 .result-detail {
-  margin: 5px 0 0;
+  margin: 3px 0 0;
 
   color: var(--muted);
+
+  font-size: 0.9rem;
 }
 
-/* Help */
-
-.help-card {
-  margin-top: 18px;
-  padding: 20px 22px;
-}
-
-/* Utility */
+/* Hidden */
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* Tablet / mobile */
 
 @media (max-width: 600px) {
   body {
-    padding: 14px;
+    padding: 10px;
   }
 
   .app-header {
-    gap: 14px;
+    gap: 10px;
+
+    margin-bottom: 10px;
   }
 
   .brand-row {
-    gap: 12px;
+    gap: 9px;
   }
 
   .site-logo {
-    width: 70px;
+    width: 68px;
   }
 
   .brand-text h1 {
-    font-size: 2rem;
+    font-size: 1.55rem;
+  }
+
+  .eyebrow {
+    margin: 2px 0 3px;
+
+    font-size: 0.7rem;
   }
 
   .subtitle {
-    font-size: 0.95rem;
+    font-size: 0.82rem;
   }
 
   .status-pill {
-    padding: 8px 12px;
-    font-size: 0.9rem;
+    padding: 7px 9px;
+
+    font-size: 0.78rem;
   }
 
   .scanner-card {
-    padding: 16px;
+    padding: 14px;
   }
 
-  #reader,
-  #reader__scan_region,
-  #reader video,
-  #reader canvas {
-    height: 260px !important;
-    max-height: 260px !important;
+  .scanner-heading h2 {
+    font-size: 1.35rem;
   }
 
-  .scanner-actions {
-    display: grid;
+  .scanner-heading p {
+    margin-bottom: 10px;
 
-    grid-template-columns: repeat(2, 1fr);
+    font-size: 0.88rem;
   }
 
-  .primary-button,
-  .secondary-button,
+  .learner-id-display {
+    min-height: 56px;
+
+    margin-bottom: 10px;
+
+    padding: 8px 12px;
+
+    font-size: 1.8rem;
+  }
+
+  .number-pad {
+    gap: 7px;
+  }
+
+  .number-button,
+  .keypad-action {
+    min-height: 52px;
+  }
+
+  .number-button {
+    font-size: 1.4rem;
+  }
+
+  .submit-button {
+    min-height: 48px;
+
+    margin-top: 9px;
+
+    padding: 10px 18px;
+  }
+
   .logout-button {
-    width: 100%;
+    min-height: 42px;
+
+    margin-top: 7px;
+
+    padding: 9px 18px;
+  }
+
+  .result-card {
+    top: 10px;
+
+    padding: 14px 16px;
+  }
+}
+
+/* Small phones */
+
+@media (max-width: 400px) {
+  .site-logo {
+    width: 56px;
+  }
+
+  .brand-text h1 {
+    font-size: 1.35rem;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .status-pill {
+    padding: 6px 8px;
+
+    font-size: 0.72rem;
+  }
+
+  .scanner-card {
+    padding: 12px;
+  }
+
+  .learner-id-display {
+    font-size: 1.65rem;
+  }
+
+  .number-button,
+  .keypad-action {
+    min-height: 49px;
   }
 }

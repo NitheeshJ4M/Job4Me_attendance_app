@@ -1,146 +1,175 @@
-const startButton = document.getElementById("startButton");
-const stopButton = document.getElementById("stopButton");
 const systemStatus = document.getElementById("systemStatus");
 
-const resultCard = document.getElementById("resultCard");
-const resultIcon = document.getElementById("resultIcon");
-const resultTitle = document.getElementById("resultTitle");
-const resultName = document.getElementById("resultName");
-const resultDetail = document.getElementById("resultDetail");
+const enteredDigits = document.getElementById("enteredDigits");
+
+const numberButtons = document.querySelectorAll(".number-button");
+
+const clearButton = document.getElementById("clearButton");
+
+const backspaceButton = document.getElementById("backspaceButton");
+
+const submitButton = document.getElementById("submitButton");
+
 const logoutButton = document.getElementById("logoutButton");
+
+const resultCard = document.getElementById("resultCard");
+
+const resultIcon = document.getElementById("resultIcon");
+
+const resultTitle = document.getElementById("resultTitle");
+
+const resultName = document.getElementById("resultName");
+
+const resultDetail = document.getElementById("resultDetail");
 
 const API_URL = "/.netlify/functions/attendance";
 
-let scanner = null;
-let scannerRunning = false;
-let processingScan = false;
+let digits = "";
 
-let lastScannedCode = "";
-let lastScannedAt = 0;
+let processingAttendance = false;
 
-startButton.addEventListener("click", startScanner);
-stopButton.addEventListener("click", stopScanner);
+let resultTimer = null;
 
-// =====================================================
-// START CAMERA
-// =====================================================
+let activeSpeech = null;
 
-async function startScanner() {
-  if (scannerRunning) return;
+let speechTimer = null;
+
+/* -----------------------------------
+   START
+----------------------------------- */
+
+checkAuthentication();
+
+updateDisplay();
+
+// Number buttons
+
+numberButtons.forEach(function (button) {
+  button.addEventListener("click", function () {
+    const number = button.getAttribute("data-number");
+
+    addNumber(number);
+  });
+});
+
+// Clear
+
+clearButton.addEventListener("click", clearNumber);
+
+// Backspace
+
+backspaceButton.addEventListener("click", removeLastNumber);
+
+// Submit
+
+submitButton.addEventListener("click", submitAttendance);
+
+// Logout
+
+logoutButton.addEventListener("click", logout);
+
+// Helps recover speech after
+// switching apps / locking device
+
+document.addEventListener("visibilitychange", function () {
+  if (document.visibilityState === "visible" && "speechSynthesis" in window) {
+    window.speechSynthesis.resume();
+  }
+});
+
+/* -----------------------------------
+   NUMBER PAD
+----------------------------------- */
+
+function addNumber(number) {
+  if (processingAttendance) {
+    return;
+  }
+
+  // Maximum 6 digits.
+  // Change this if you ever need more.
+
+  if (digits.length >= 6) {
+    return;
+  }
+
+  digits += number;
+
+  updateDisplay();
 
   hideResult();
-  setSystemStatus("Starting camera...");
-
-  scanner = new Html5Qrcode("reader");
-
-  try {
-    await scanner.start(
-      {
-        facingMode: "user",
-      },
-      {
-        fps: 15,
-        aspectRatio: 1.333333,
-      },
-      handleQrSuccess,
-      () => {
-        // Ignore normal scanning errors
-      },
-    );
-
-    scannerRunning = true;
-
-    startButton.disabled = true;
-    stopButton.disabled = false;
-
-    setSystemStatus("Camera ready");
-  } catch (error) {
-    console.error(error);
-
-    scanner = null;
-    scannerRunning = false;
-
-    showResult({
-      type: "error",
-      title: "Camera could not start",
-      name: "",
-      detail: "Please allow camera permission to use the scanner.",
-    });
-
-    setSystemStatus("Camera error");
-  }
 }
 
-// =====================================================
-// STOP CAMERA
-// =====================================================
-
-async function stopScanner() {
-  if (!scanner || !scannerRunning) return;
-
-  try {
-    await scanner.stop();
-    scanner.clear();
-  } catch (error) {
-    console.error(error);
+function removeLastNumber() {
+  if (processingAttendance) {
+    return;
   }
 
-  scanner = null;
-  scannerRunning = false;
-  processingScan = false;
+  digits = digits.slice(0, -1);
 
-  startButton.disabled = false;
-  stopButton.disabled = true;
-
-  setSystemStatus("Stopped");
+  updateDisplay();
 }
 
-// =====================================================
-// QR SUCCESS
-// =====================================================
+function clearNumber() {
+  if (processingAttendance) {
+    return;
+  }
 
-async function handleQrSuccess(decodedText) {
-  if (processingScan) return;
+  digits = "";
 
-  const learnerId = extractLearnerId(decodedText);
+  updateDisplay();
 
-  if (!learnerId) {
-    showResult({
-      type: "error",
-      title: "Invalid QR code",
-      name: "",
-      detail: "No learner ID was found.",
-    });
+  hideResult();
+}
+
+function updateDisplay() {
+  if (!digits) {
+    enteredDigits.textContent = "---";
 
     return;
   }
 
-  const now = Date.now();
+  enteredDigits.textContent = digits;
+}
 
-  // Prevent the same learner being scanned
-  // twice immediately.
+/* -----------------------------------
+   SUBMIT ATTENDANCE
+----------------------------------- */
 
-  if (learnerId === lastScannedCode && now - lastScannedAt < 15000) {
+async function submitAttendance() {
+  if (processingAttendance) {
     return;
   }
 
-  lastScannedCode = learnerId;
-  lastScannedAt = now;
+  /*
+    Learner IDs currently require
+    at least 3 digits:
 
-  processingScan = true;
+    J4M_001
+    J4M_049
+    J4M_123
+  */
 
-  setSystemStatus("Recording attendance...");
+  if (digits.length < 3) {
+    showResult({
+      type: "error",
+      title: "Invalid learner number",
+      name: "",
+      detail: "Please enter at least 3 numbers.",
+    });
 
-  // Show immediate feedback
+    setSystemStatus("Invalid number");
 
-  showResult({
-    type: "success",
-    title: "QR detected",
-    name: learnerId,
-    detail: "Recording attendance...",
-  });
+    return;
+  }
 
-  await pauseScanner();
+  const learnerId = "J4M_" + digits;
+
+  processingAttendance = true;
+
+  setControlsDisabled(true);
+
+  setSystemStatus("Recording...");
 
   try {
     const result = await sendAttendanceToBackend(learnerId);
@@ -153,64 +182,71 @@ async function handleQrSuccess(decodedText) {
       name: result.name || learnerId,
 
       detail: result.time
-        ? `${result.session ? result.session + " • " : ""}${result.time}`
+        ? (result.session ? result.session + " • " : "") + result.time
         : result.message || "",
 
       birthday: result.birthday === true,
     });
 
-    // Speak only if attendance succeeded
-
     if (result.success) {
+      setSystemStatus(
+        result.action === "checkout" ? "Checked out" : "Checked in",
+      );
+
+      /*
+        Voice announcement
+      */
+
       speakAttendance(result);
+
+      /*
+        Clear ID immediately so
+        next learner can enter theirs.
+      */
+
+      digits = "";
+
+      updateDisplay();
+    } else {
+      setSystemStatus("Not recorded");
     }
   } catch (error) {
     console.error(error);
 
     showResult({
       type: "error",
+
       title: "Attendance was not recorded",
+
       name: learnerId,
+
       detail: error.message || "Please try again.",
     });
+
+    setSystemStatus("Connection error");
   }
 
-  // Return to camera after confirmation
+  processingAttendance = false;
 
-  window.setTimeout(resetScanner, 2500);
+  setControlsDisabled(false);
+
+  /*
+    Automatically hide popup
+    after 3 seconds.
+  */
+
+  clearTimeout(resultTimer);
+
+  resultTimer = setTimeout(function () {
+    hideResult();
+
+    setSystemStatus("Ready");
+  }, 3000);
 }
 
-// =====================================================
-// READ LEARNER ID FROM QR
-// =====================================================
-
-function extractLearnerId(value) {
-  const text = String(value || "").trim();
-
-  if (!text) return "";
-
-  // Supports old QR codes containing URLs
-  // such as ?id=J4M_001
-
-  try {
-    const url = new URL(text);
-
-    const idFromUrl = url.searchParams.get("id");
-
-    if (idFromUrl) {
-      return idFromUrl.trim();
-    }
-  } catch {
-    // Not a URL.
-    // Use the QR contents directly.
-  }
-
-  return text;
-}
-
-// =====================================================
-// SEND ATTENDANCE TO NETLIFY FUNCTION
-// =====================================================
+/* -----------------------------------
+   SEND TO NETLIFY
+----------------------------------- */
 
 async function sendAttendanceToBackend(learnerId) {
   const response = await fetch(API_URL, {
@@ -221,69 +257,59 @@ async function sendAttendanceToBackend(learnerId) {
     },
 
     body: JSON.stringify({
-      learnerId,
+      learnerId: learnerId,
     }),
   });
 
-  const result = await response.json().catch(() => null);
+  let result = null;
+
+  try {
+    result = await response.json();
+  } catch (error) {
+    result = null;
+  }
+
+  /*
+    Authentication expired
+  */
+
+  if (response.status === 401) {
+    window.location.replace("/");
+
+    throw new Error("Your login session has expired.");
+  }
 
   if (!response.ok || !result) {
     throw new Error(
-      result?.message || `Attendance server returned ${response.status}`,
+      result && result.message
+        ? result.message
+        : "Attendance server returned " + response.status,
     );
   }
 
   return result;
 }
 
-// =====================================================
-// PAUSE CAMERA
-// =====================================================
+/* -----------------------------------
+   RESULT POPUP
+----------------------------------- */
 
-async function pauseScanner() {
-  if (!scanner || !scannerRunning) {
-    return;
-  }
+function showResult(options) {
+  clearTimeout(resultTimer);
 
-  try {
-    scanner.pause(true);
-  } catch (error) {
-    console.warn("Could not pause scanner:", error);
-  }
-}
+  const type = options.type;
 
-// =====================================================
-// RESET CAMERA AFTER CHECK-IN / CHECK-OUT
-// =====================================================
+  const title = options.title;
 
-function resetScanner() {
-  hideResult();
+  const name = options.name;
 
-  processingScan = false;
+  const detail = options.detail;
 
-  if (scanner && scannerRunning) {
-    try {
-      scanner.resume();
+  const birthday = options.birthday === true;
 
-      setSystemStatus("Camera ready");
-    } catch (error) {
-      console.warn(error);
-
-      setSystemStatus("Ready");
-    }
-  }
-}
-
-// =====================================================
-// SHOW RESULT
-// =====================================================
-
-function showResult({ type, title, name, detail, birthday = false }) {
   resultCard.classList.remove("hidden", "success", "error");
 
   resultCard.classList.add(type === "error" ? "error" : "success");
-
-  // Special birthday icon
 
   if (birthday) {
     resultIcon.textContent = "🎂";
@@ -291,21 +317,16 @@ function showResult({ type, title, name, detail, birthday = false }) {
     resultIcon.textContent = type === "error" ? "×" : "✓";
   }
 
-  resultTitle.textContent = title;
+  resultTitle.textContent = title || "";
 
   resultName.textContent = name || "";
 
   resultDetail.textContent = detail || "";
-
-  resultCard.scrollIntoView({
-    behavior: "smooth",
-    block: "center",
-  });
 }
 
-// =====================================================
-// HIDE RESULT
-// =====================================================
+/* -----------------------------------
+   HIDE RESULT
+----------------------------------- */
 
 function hideResult() {
   resultCard.classList.add("hidden");
@@ -313,81 +334,212 @@ function hideResult() {
   resultCard.classList.remove("success", "error");
 }
 
-// =====================================================
-// SYSTEM STATUS
-// =====================================================
+/* -----------------------------------
+   STATUS
+----------------------------------- */
 
 function setSystemStatus(text) {
   systemStatus.textContent = text;
 }
 
-// =====================================================
-// VOICE ANNOUNCEMENT
-// =====================================================
+/* -----------------------------------
+   DISABLE BUTTONS WHILE RECORDING
+----------------------------------- */
+
+function setControlsDisabled(disabled) {
+  submitButton.disabled = disabled;
+
+  clearButton.disabled = disabled;
+
+  backspaceButton.disabled = disabled;
+
+  numberButtons.forEach(function (button) {
+    button.disabled = disabled;
+  });
+}
+
+/* -----------------------------------
+   VOICE
+----------------------------------- */
 
 function speakAttendance(result) {
-  // Check whether browser supports
-  // text-to-speech
-
   if (!("speechSynthesis" in window)) {
     console.warn("Text-to-speech is not supported.");
 
     return;
   }
 
-  // Stop previous announcement
-
-  window.speechSynthesis.cancel();
-
-  let message = "";
-
-  // ===================================================
-  // CHECK IN
-  // ===================================================
   const firstName = String(result.name || "")
     .trim()
     .split(/\s+/)[0];
+
+  let message = "";
+
+  /*
+    Check in
+  */
+
   if (result.action === "checkin") {
-    // Birthday check-in
     if (result.birthday === true) {
       message =
-        `Happy birthday ${firstName}! ` +
-        `Welcome. ` +
-        `We hope you have a wonderful day.`;
-    }
-
-    // Normal check-in
-    else {
-      message = `Welcome ${firstName}.` + `Please Sign in`;
+        "Happy birthday " +
+        firstName +
+        "! Welcome. " +
+        "We hope you have a wonderful day.";
+    } else {
+      message = "Welcome " + firstName + ". Please sign in.";
     }
   }
 
-  // Check-out
+  /*
+    Check out
+  */
+
   if (result.action === "checkout") {
-    message = `Goodbye ${firstName}. ` + `Please Sign Out.`;
+    message = "Goodbye " + firstName + ". Please sign out.";
   }
 
-  if (!message) return;
+  if (!message) {
+    return;
+  }
 
-  const speech = new SpeechSynthesisUtterance(message);
+  /*
+    Clear any previous timer
+  */
 
-  // British English
+  if (speechTimer) {
+    clearTimeout(speechTimer);
 
-  speech.lang = "en-GB";
+    speechTimer = null;
+  }
 
-  // Slightly slower for clarity
+  /*
+    Reset mobile speech engine.
 
-  speech.rate = 0.95;
+    cancel + resume + short delay
+    is more reliable on phones
+    and tablets.
+  */
 
-  speech.pitch = 1;
+  window.speechSynthesis.cancel();
 
-  speech.volume = 1;
+  window.speechSynthesis.resume();
 
-  window.speechSynthesis.speak(speech);
+  speechTimer = setTimeout(function () {
+    playSpeech(message, false);
+  }, 180);
 }
 
-// Check Authentication
-checkAuthentication();
+/* -----------------------------------
+   PLAY SPEECH
+----------------------------------- */
+
+function playSpeech(message, isRetry) {
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+  window.speechSynthesis.resume();
+
+  activeSpeech = new SpeechSynthesisUtterance(message);
+
+  activeSpeech.lang = "en-GB";
+
+  activeSpeech.rate = 0.95;
+
+  activeSpeech.pitch = 1;
+
+  activeSpeech.volume = 1;
+
+  /*
+    Select an English UK voice
+    if the device has one.
+  */
+
+  const voices = window.speechSynthesis.getVoices();
+
+  let selectedVoice = null;
+
+  for (let i = 0; i < voices.length; i++) {
+    const language = String(voices[i].lang || "").toLowerCase();
+
+    if (language.indexOf("en-gb") === 0) {
+      selectedVoice = voices[i];
+
+      break;
+    }
+  }
+
+  if (selectedVoice) {
+    activeSpeech.voice = selectedVoice;
+  }
+
+  /*
+    Speech started
+  */
+
+  activeSpeech.onstart = function () {
+    console.log("Speech started");
+  };
+
+  /*
+    Speech completed
+  */
+
+  activeSpeech.onend = function () {
+    console.log("Speech finished");
+
+    activeSpeech = null;
+  };
+
+  /*
+    If mobile speech engine
+    randomly fails, try once.
+  */
+
+  activeSpeech.onerror = function (event) {
+    console.warn("Speech error:", event.error);
+
+    activeSpeech = null;
+
+    /*
+        Do not retry intentional
+        cancel/interruption events.
+      */
+
+    if (
+      !isRetry &&
+      event.error !== "canceled" &&
+      event.error !== "interrupted"
+    ) {
+      setTimeout(function () {
+        window.speechSynthesis.cancel();
+
+        window.speechSynthesis.resume();
+
+        setTimeout(function () {
+          playSpeech(message, true);
+        }, 200);
+      }, 250);
+    }
+  };
+
+  /*
+    Start voice
+  */
+
+  try {
+    window.speechSynthesis.speak(activeSpeech);
+  } catch (error) {
+    console.error("Speech failed:", error);
+
+    activeSpeech = null;
+  }
+}
+
+/* -----------------------------------
+   AUTHENTICATION
+----------------------------------- */
 
 async function checkAuthentication() {
   try {
@@ -398,19 +550,29 @@ async function checkAuthentication() {
     if (!response.ok) {
       window.location.replace("/");
     }
-  } catch {
+  } catch (error) {
+    console.error(error);
+
     window.location.replace("/");
   }
 }
 
-// Logout
-
-logoutButton?.addEventListener("click", logout);
+/* -----------------------------------
+   LOGOUT
+----------------------------------- */
 
 async function logout() {
-  await fetch("/.netlify/functions/logout", {
-    method: "POST",
-  });
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+
+  try {
+    await fetch("/.netlify/functions/logout", {
+      method: "POST",
+    });
+  } catch (error) {
+    console.error(error);
+  }
 
   window.location.replace("/");
 }
