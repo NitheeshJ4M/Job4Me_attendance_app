@@ -1,7 +1,5 @@
 const systemStatus = document.getElementById("systemStatus");
 
-const idPrefix = document.getElementById("idPrefix");
-
 const enteredDigits = document.getElementById("enteredDigits");
 
 const numberButtons = document.querySelectorAll(".number-button");
@@ -24,6 +22,8 @@ const resultName = document.getElementById("resultName");
 
 const resultDetail = document.getElementById("resultDetail");
 
+const idPrefix = document.getElementById("idPrefix");
+
 const API_URL = "/.netlify/functions/attendance";
 
 let digits = "";
@@ -36,8 +36,6 @@ let activeSpeech = null;
 
 let speechTimer = null;
 
-let preferredVoice = null;
-
 /* -----------------------------------
    START
 ----------------------------------- */
@@ -46,11 +44,7 @@ checkAuthentication();
 
 updateDisplay();
 
-loadPreferredVoice();
-
-/* -----------------------------------
-   BUTTON EVENTS
------------------------------------ */
+// Number buttons
 
 numberButtons.forEach(function (button) {
   button.addEventListener("click", function () {
@@ -60,61 +54,30 @@ numberButtons.forEach(function (button) {
   });
 });
 
+// Clear
+
 clearButton.addEventListener("click", clearNumber);
+
+// Backspace
 
 backspaceButton.addEventListener("click", removeLastNumber);
 
+// Submit
+
 submitButton.addEventListener("click", submitAttendance);
+
+// Logout
 
 logoutButton.addEventListener("click", logout);
 
-/* -----------------------------------
-   PHYSICAL KEYBOARD SUPPORT
------------------------------------ */
-
-document.addEventListener("keydown", function (event) {
-  if (processingAttendance) {
-    return;
-  }
-
-  if (event.key >= "0" && event.key <= "9") {
-    addNumber(event.key);
-
-    return;
-  }
-
-  if (event.key === "Backspace") {
-    removeLastNumber();
-
-    return;
-  }
-
-  if (event.key === "Escape") {
-    clearNumber();
-
-    return;
-  }
-
-  if (event.key === "Enter") {
-    submitAttendance();
-  }
-});
-
-/* -----------------------------------
-   SPEECH RECOVERY
------------------------------------ */
+// Helps recover speech after
+// switching apps / locking device
 
 document.addEventListener("visibilitychange", function () {
   if (document.visibilityState === "visible" && "speechSynthesis" in window) {
     window.speechSynthesis.resume();
-
-    loadPreferredVoice();
   }
 });
-
-if ("speechSynthesis" in window) {
-  window.speechSynthesis.addEventListener("voiceschanged", loadPreferredVoice);
-}
 
 /* -----------------------------------
    NUMBER PAD
@@ -125,6 +88,9 @@ function addNumber(number) {
     return;
   }
 
+  // Maximum 6 digits.
+  // Change this if you ever need more.
+
   if (digits.length >= 6) {
     return;
   }
@@ -134,8 +100,6 @@ function addNumber(number) {
   updateDisplay();
 
   hideResult();
-
-  setSystemStatus("Ready");
 }
 
 function removeLastNumber() {
@@ -158,13 +122,9 @@ function clearNumber() {
   updateDisplay();
 
   hideResult();
-
-  setSystemStatus("Ready");
 }
 
 function updateDisplay() {
-  idPrefix.textContent = "J4M_";
-
   if (!digits) {
     enteredDigits.textContent = "_ _";
 
@@ -172,28 +132,6 @@ function updateDisplay() {
   }
 
   enteredDigits.textContent = digits;
-}
-
-/* -----------------------------------
-   RECORDING DISPLAY
------------------------------------ */
-
-function showRecordingState() {
-  idPrefix.textContent = "";
-
-  enteredDigits.textContent = "Recording...";
-
-  submitButton.textContent = "Please wait...";
-
-  setSystemStatus("Recording...");
-}
-
-function restoreNormalState() {
-  idPrefix.textContent = "J4M_";
-
-  submitButton.textContent = "Check in / out";
-
-  updateDisplay();
 }
 
 /* -----------------------------------
@@ -205,6 +143,15 @@ async function submitAttendance() {
     return;
   }
 
+  /*
+    Learner IDs currently require
+    at least 3 digits:
+
+    J4M_001
+    J4M_049
+    J4M_123
+  */
+
   if (digits.length < 3) {
     showResult({
       type: "error",
@@ -215,8 +162,6 @@ async function submitAttendance() {
 
     setSystemStatus("Invalid number");
 
-    scheduleResultReset();
-
     return;
   }
 
@@ -226,9 +171,13 @@ async function submitAttendance() {
 
   setControlsDisabled(true);
 
-  hideResult();
+  // Show immediate feedback
+  idPrefix.textContent = "";
+  enteredDigits.textContent = "Recording...";
 
-  showRecordingState();
+  submitButton.textContent = "Please wait...";
+
+  setSystemStatus("Recording...");
 
   try {
     const result = await sendAttendanceToBackend(learnerId);
@@ -252,15 +201,20 @@ async function submitAttendance() {
         result.action === "checkout" ? "Checked out" : "Checked in",
       );
 
-      // Speak only after the
-      // attendance is confirmed.
+      /*
+        Voice announcement
+      */
 
       speakAttendance(result);
 
-      // Clear ready for the
-      // next learner.
+      /*
+        Clear ID immediately so
+        next learner can enter theirs.
+      */
 
       digits = "";
+
+      updateDisplay();
     } else {
       setSystemStatus("Not recorded");
     }
@@ -278,19 +232,35 @@ async function submitAttendance() {
     });
 
     setSystemStatus("Connection error");
-  } finally {
-    processingAttendance = false;
-
-    setControlsDisabled(false);
-
-    restoreNormalState();
-
-    scheduleResultReset();
   }
+
+  processingAttendance = false;
+
+  setControlsDisabled(false);
+
+  // Restore normal display
+  idPrefix.textContent = "J4M_";
+
+  submitButton.textContent = "Check in / out";
+
+  updateDisplay();
+
+  /*
+    Automatically hide popup
+    after 3 seconds.
+  */
+
+  clearTimeout(resultTimer);
+
+  resultTimer = setTimeout(function () {
+    hideResult();
+
+    setSystemStatus("Ready");
+  }, 3000);
 }
 
 /* -----------------------------------
-   NETLIFY REQUEST
+   SEND TO NETLIFY
 ----------------------------------- */
 
 async function sendAttendanceToBackend(learnerId) {
@@ -314,7 +284,9 @@ async function sendAttendanceToBackend(learnerId) {
     result = null;
   }
 
-  // Login expired
+  /*
+    Authentication expired
+  */
 
   if (response.status === 401) {
     window.location.replace("/");
@@ -378,20 +350,6 @@ function hideResult() {
 }
 
 /* -----------------------------------
-   AUTO RESET POPUP
------------------------------------ */
-
-function scheduleResultReset() {
-  clearTimeout(resultTimer);
-
-  resultTimer = setTimeout(function () {
-    hideResult();
-
-    setSystemStatus("Ready");
-  }, 3000);
-}
-
-/* -----------------------------------
    STATUS
 ----------------------------------- */
 
@@ -400,7 +358,7 @@ function setSystemStatus(text) {
 }
 
 /* -----------------------------------
-   DISABLE CONTROLS
+   DISABLE BUTTONS WHILE RECORDING
 ----------------------------------- */
 
 function setControlsDisabled(disabled) {
@@ -416,31 +374,7 @@ function setControlsDisabled(disabled) {
 }
 
 /* -----------------------------------
-   LOAD PREFERRED VOICE
------------------------------------ */
-
-function loadPreferredVoice() {
-  if (!("speechSynthesis" in window)) {
-    return;
-  }
-
-  const voices = window.speechSynthesis.getVoices();
-
-  preferredVoice = null;
-
-  for (let i = 0; i < voices.length; i++) {
-    const language = String(voices[i].lang || "").toLowerCase();
-
-    if (language.indexOf("en-gb") === 0) {
-      preferredVoice = voices[i];
-
-      break;
-    }
-  }
-}
-
-/* -----------------------------------
-   VOICE ANNOUNCEMENT
+   VOICE
 ----------------------------------- */
 
 function speakAttendance(result) {
@@ -456,7 +390,9 @@ function speakAttendance(result) {
 
   let message = "";
 
-  // Check in
+  /*
+    Check in
+  */
 
   if (result.action === "checkin") {
     if (result.birthday === true) {
@@ -470,7 +406,9 @@ function speakAttendance(result) {
     }
   }
 
-  // Check out
+  /*
+    Check out
+  */
 
   if (result.action === "checkout") {
     message = "Goodbye " + firstName + ". Please sign out.";
@@ -480,13 +418,23 @@ function speakAttendance(result) {
     return;
   }
 
+  /*
+    Clear any previous timer
+  */
+
   if (speechTimer) {
     clearTimeout(speechTimer);
 
     speechTimer = null;
   }
 
-  // Reset mobile speech engine
+  /*
+    Reset mobile speech engine.
+
+    cancel + resume + short delay
+    is more reliable on phones
+    and tablets.
+  */
 
   window.speechSynthesis.cancel();
 
@@ -518,13 +466,40 @@ function playSpeech(message, isRetry) {
 
   activeSpeech.volume = 1;
 
-  if (preferredVoice) {
-    activeSpeech.voice = preferredVoice;
+  /*
+    Select an English UK voice
+    if the device has one.
+  */
+
+  const voices = window.speechSynthesis.getVoices();
+
+  let selectedVoice = null;
+
+  for (let i = 0; i < voices.length; i++) {
+    const language = String(voices[i].lang || "").toLowerCase();
+
+    if (language.indexOf("en-gb") === 0) {
+      selectedVoice = voices[i];
+
+      break;
+    }
   }
+
+  if (selectedVoice) {
+    activeSpeech.voice = selectedVoice;
+  }
+
+  /*
+    Speech started
+  */
 
   activeSpeech.onstart = function () {
     console.log("Speech started");
   };
+
+  /*
+    Speech completed
+  */
 
   activeSpeech.onend = function () {
     console.log("Speech finished");
@@ -532,10 +507,20 @@ function playSpeech(message, isRetry) {
     activeSpeech = null;
   };
 
+  /*
+    If mobile speech engine
+    randomly fails, try once.
+  */
+
   activeSpeech.onerror = function (event) {
     console.warn("Speech error:", event.error);
 
     activeSpeech = null;
+
+    /*
+        Do not retry intentional
+        cancel/interruption events.
+      */
 
     if (
       !isRetry &&
@@ -553,6 +538,10 @@ function playSpeech(message, isRetry) {
       }, 250);
     }
   };
+
+  /*
+    Start voice
+  */
 
   try {
     window.speechSynthesis.speak(activeSpeech);
