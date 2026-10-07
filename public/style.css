@@ -19,7 +19,7 @@
   --success: #15803d;
   --danger: #b91c1c;
 
-  --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  --shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
 }
 
 /* Page */
@@ -44,7 +44,7 @@ button {
 }
 
 .app-shell {
-  width: min(760px, 100%);
+  width: min(780px, 100%);
   margin: 0 auto;
 }
 
@@ -57,7 +57,7 @@ button {
 
   gap: 18px;
 
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .brand-row {
@@ -70,7 +70,7 @@ button {
 }
 
 .site-logo {
-  width: 100px;
+  width: 92px;
   height: auto;
 
   flex-shrink: 0;
@@ -83,18 +83,20 @@ button {
 .brand-text h1 {
   margin: 0;
 
-  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  font-size: clamp(1.55rem, 3.5vw, 2.15rem);
+
+  line-height: 1.05;
 
   color: var(--brand-green);
 }
 
 .eyebrow {
-  margin: 3px 0 5px;
+  margin: 4px 0 5px;
 
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
 
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
 
   color: var(--primary);
 }
@@ -102,10 +104,12 @@ button {
 .subtitle {
   margin: 0;
 
+  max-width: 470px;
+
   color: var(--muted);
 
   font-size: 0.95rem;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .status-pill {
@@ -121,24 +125,24 @@ button {
 
   color: var(--muted);
 
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
-/* Attendance card */
+/* Main card */
 
 .scanner-card {
-  width: min(500px, 100%);
+  width: min(540px, 100%);
 
   margin: 0 auto;
 
-  padding: 18px;
+  padding: 24px;
 
   background: var(--surface);
 
   border: 1px solid var(--border);
 
-  border-radius: 22px;
+  border-radius: 24px;
 
   box-shadow: var(--shadow);
 }
@@ -148,54 +152,55 @@ button {
 }
 
 .scanner-heading h2 {
-  margin: 0 0 5px;
+  margin: 0 0 6px;
 
-  font-size: 1.55rem;
+  font-size: 1.65rem;
+  line-height: 1.1;
 }
 
 .scanner-heading p {
-  margin: 0 0 14px;
+  margin: 0 0 18px;
 
   color: var(--muted);
 
-  font-size: 0.95rem;
-
-  line-height: 1.4;
+  font-size: 0.98rem;
+  line-height: 1.35;
 }
 
 /* Learner ID display */
 
 .learner-id-display {
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  min-height: 64px;
+  min-height: 78px;
 
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 
-  padding: 10px 16px;
+  padding: 14px 18px;
 
   border: 2px solid var(--border);
 
-  border-radius: 16px;
+  border-radius: 18px;
 
   background: #f8fafc;
 
-  font-size: 2rem;
+  font-size: clamp(1.8rem, 5vw, 2.2rem);
+
   font-weight: 800;
 
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .id-prefix {
   color: var(--brand-green);
-  margin-right: 9px;
+
+  margin-right: 10px;
 }
 
 .id-number {
-  min-width: 92px;
+  min-width: 100px;
 
   color: var(--text);
 }
@@ -207,16 +212,16 @@ button {
 
   grid-template-columns: repeat(3, 1fr);
 
-  gap: 8px;
+  gap: 12px;
 }
 
 .number-button,
 .keypad-action {
-  min-height: 58px;
+  min-height: 66px;
 
   border: 1px solid var(--border);
 
-  border-radius: 14px;
+  border-radius: 16px;
 
   background: #ffffff;
 
@@ -232,18 +237,22 @@ button {
 
   transition:
     background 0.15s ease,
-    transform 0.1s ease,
-    border-color 0.15s ease;
+    border-color 0.15s ease,
+    transform 0.1s ease;
 }
 
 .number-button {
-  font-size: 1.55rem;
+  font-size: 1.7rem;
 }
 
-.number-button:hover {
+.keypad-action {
   background: #f1f5f9;
 
-  border-color: #cbd5e1;
+  font-size: 1rem;
+}
+
+.backspace-button {
+  font-size: 1.5rem;
 }
 
 .number-button:active,
@@ -251,42 +260,24 @@ button {
   transform: scale(0.96);
 }
 
-/* Clear and delete */
-
-.keypad-action {
-  font-size: 0.95rem;
-
-  background: #f1f5f9;
-}
-
-.clear-button {
-  color: var(--muted);
-}
-
-.backspace-button {
-  color: var(--text);
-
-  font-size: 1.5rem;
-}
-
-/* Check in/out button */
+/* Check in/out */
 
 .submit-button {
   width: 100%;
 
-  min-height: 50px;
+  min-height: 54px;
 
-  margin-top: 12px;
+  margin-top: 14px;
 
-  padding: 12px 20px;
+  padding: 13px 20px;
 
   border: 0;
 
-  border-radius: 14px;
+  border-radius: 16px;
 
   background: var(--primary);
 
-  color: white;
+  color: #ffffff;
 
   font-size: 1.05rem;
   font-weight: 700;
@@ -296,32 +287,28 @@ button {
   touch-action: manipulation;
 
   transition:
-    background 0.2s ease,
+    background 0.15s ease,
     transform 0.1s ease;
-}
-
-.submit-button:hover {
-  background: var(--primary-dark);
 }
 
 .submit-button:active {
   transform: scale(0.98);
 }
 
-/* Logout button */
+/* Logout */
 
 .logout-button {
   width: 100%;
 
-  min-height: 44px;
+  min-height: 48px;
 
-  margin-top: 8px;
+  margin-top: 10px;
 
-  padding: 10px 20px;
+  padding: 11px 20px;
 
   border: 1px solid #fecaca;
 
-  border-radius: 14px;
+  border-radius: 16px;
 
   background: #ffffff;
 
@@ -338,20 +325,23 @@ button {
     transform 0.1s ease;
 }
 
-.logout-button:hover {
-  background: #fef2f2;
-}
-
 .logout-button:active {
   transform: scale(0.98);
 }
 
-/* Attendance popup */
+/* Disabled */
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Result popup */
 
 .result-card {
   position: fixed;
 
-  top: 18px;
+  top: 16px;
   left: 50%;
 
   transform: translateX(-50%);
@@ -361,9 +351,9 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 15px;
+  gap: 14px;
 
-  width: min(500px, calc(100% - 28px));
+  width: min(500px, calc(100% - 24px));
 
   padding: 16px 18px;
 
@@ -376,23 +366,15 @@ button {
   box-shadow: 0 18px 50px rgba(15, 23, 42, 0.22);
 }
 
-/* Success popup */
-
 .result-card.success {
   background: #f0fdf4;
-
   border-color: #22c55e;
 }
 
-/* Error popup */
-
 .result-card.error {
   background: #fef2f2;
-
   border-color: #ef4444;
 }
-
-/* Popup icon */
 
 .result-icon {
   display: grid;
@@ -415,11 +397,8 @@ button {
 
 .result-card.error .result-icon {
   background: #fee2e2;
-
   color: var(--danger);
 }
-
-/* Popup text */
 
 .result-content {
   min-width: 0;
@@ -428,13 +407,13 @@ button {
 .result-card h2 {
   margin: 0;
 
-  font-size: 1.25rem;
+  font-size: 1.2rem;
 }
 
 .result-name {
   margin: 5px 0 0;
 
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
 }
 
@@ -452,7 +431,68 @@ button {
   display: none !important;
 }
 
-/* Tablet / mobile */
+/* Hover only for mouse devices */
+
+@media (hover: hover) and (pointer: fine) {
+  .number-button:hover {
+    background: #f1f5f9;
+
+    border-color: #cbd5e1;
+  }
+
+  .submit-button:hover {
+    background: var(--primary-dark);
+  }
+
+  .logout-button:hover {
+    background: #fef2f2;
+  }
+}
+
+/* Tablet */
+
+@media (min-width: 700px) {
+  body {
+    padding: 24px;
+  }
+
+  .scanner-card {
+    padding: 30px 28px;
+  }
+
+  .learner-id-display {
+    min-height: 84px;
+
+    margin-bottom: 18px;
+
+    font-size: 2.25rem;
+  }
+
+  .number-pad {
+    gap: 14px;
+  }
+
+  .number-button,
+  .keypad-action {
+    min-height: 76px;
+  }
+
+  .number-button {
+    font-size: 1.85rem;
+  }
+
+  .submit-button {
+    min-height: 58px;
+
+    margin-top: 16px;
+  }
+
+  .logout-button {
+    min-height: 52px;
+  }
+}
+
+/* Mobile */
 
 @media (max-width: 600px) {
   body {
@@ -460,41 +500,41 @@ button {
   }
 
   .app-header {
-    gap: 10px;
+    gap: 9px;
 
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 
   .brand-row {
-    gap: 9px;
+    gap: 10px;
   }
 
   .site-logo {
-    width: 68px;
+    width: 64px;
   }
 
   .brand-text h1 {
-    font-size: 1.55rem;
+    font-size: 1.45rem;
   }
 
   .eyebrow {
     margin: 2px 0 3px;
 
-    font-size: 0.7rem;
+    font-size: 0.68rem;
   }
 
   .subtitle {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
   }
 
   .status-pill {
     padding: 7px 9px;
 
-    font-size: 0.78rem;
+    font-size: 0.76rem;
   }
 
   .scanner-card {
-    padding: 14px;
+    padding: 16px;
   }
 
   .scanner-heading h2 {
@@ -502,66 +542,82 @@ button {
   }
 
   .scanner-heading p {
-    margin-bottom: 10px;
+    margin-bottom: 11px;
 
-    font-size: 0.88rem;
+    font-size: 0.87rem;
   }
 
   .learner-id-display {
-    min-height: 56px;
+    min-height: 60px;
 
-    margin-bottom: 10px;
+    margin-bottom: 11px;
 
     padding: 8px 12px;
 
-    font-size: 1.8rem;
+    font-size: 1.75rem;
+  }
+
+  .id-prefix {
+    margin-right: 7px;
+  }
+
+  .id-number {
+    min-width: 82px;
   }
 
   .number-pad {
-    gap: 7px;
+    gap: 8px;
   }
 
   .number-button,
   .keypad-action {
-    min-height: 52px;
+    min-height: 54px;
+
+    border-radius: 13px;
   }
 
   .number-button {
-    font-size: 1.4rem;
+    font-size: 1.45rem;
   }
 
   .submit-button {
     min-height: 48px;
 
-    margin-top: 9px;
+    margin-top: 10px;
 
-    padding: 10px 18px;
+    padding: 10px 16px;
   }
 
   .logout-button {
-    min-height: 42px;
+    min-height: 43px;
 
     margin-top: 7px;
 
-    padding: 9px 18px;
+    padding: 9px 16px;
   }
 
   .result-card {
     top: 10px;
 
-    padding: 14px 16px;
+    width: calc(100% - 20px);
+
+    padding: 13px 14px;
   }
 }
 
-/* Small phones */
+/* Very small phones */
 
-@media (max-width: 400px) {
+@media (max-width: 390px) {
+  body {
+    padding: 8px;
+  }
+
   .site-logo {
-    width: 56px;
+    width: 54px;
   }
 
   .brand-text h1 {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
   }
 
   .subtitle {
@@ -571,19 +627,100 @@ button {
   .status-pill {
     padding: 6px 8px;
 
-    font-size: 0.72rem;
+    font-size: 0.7rem;
   }
 
   .scanner-card {
     padding: 12px;
   }
 
+  .scanner-heading h2 {
+    font-size: 1.25rem;
+  }
+
+  .scanner-heading p {
+    margin-bottom: 9px;
+  }
+
   .learner-id-display {
-    font-size: 1.65rem;
+    min-height: 54px;
+
+    margin-bottom: 9px;
+
+    font-size: 1.55rem;
+  }
+
+  .number-pad {
+    gap: 6px;
   }
 
   .number-button,
   .keypad-action {
     min-height: 49px;
+  }
+
+  .number-button {
+    font-size: 1.3rem;
+  }
+
+  .keypad-action {
+    font-size: 0.85rem;
+  }
+
+  .backspace-button {
+    font-size: 1.3rem;
+  }
+}
+
+/* Short landscape / short screens */
+
+@media (max-height: 700px) {
+  body {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .app-header {
+    margin-bottom: 8px;
+  }
+
+  .scanner-card {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .scanner-heading h2 {
+    font-size: 1.3rem;
+  }
+
+  .scanner-heading p {
+    margin-bottom: 8px;
+  }
+
+  .learner-id-display {
+    min-height: 54px;
+
+    margin-bottom: 8px;
+  }
+
+  .number-pad {
+    gap: 6px;
+  }
+
+  .number-button,
+  .keypad-action {
+    min-height: 48px;
+  }
+
+  .submit-button {
+    min-height: 45px;
+
+    margin-top: 8px;
+  }
+
+  .logout-button {
+    min-height: 40px;
+
+    margin-top: 6px;
   }
 }

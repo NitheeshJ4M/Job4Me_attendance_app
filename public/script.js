@@ -124,7 +124,7 @@ function clearNumber() {
 
 function updateDisplay() {
   if (!digits) {
-    enteredDigits.textContent = "---";
+    enteredDigits.textContent = "_ _";
 
     return;
   }
