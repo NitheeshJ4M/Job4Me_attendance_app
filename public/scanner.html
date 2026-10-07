@@ -3,21 +3,33 @@
   <head>
     <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
 
-    <meta name="theme-color" content="#0f172a" />
+    <meta
+      name="theme-color"
+      content="#0f172a"
+    />
 
     <title>Job4Me Attendance</title>
 
-    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="style.css"
+    />
   </head>
 
   <body>
     <main class="app-shell">
+
       <!-- Header -->
 
       <header class="app-header">
+
         <div class="brand-row">
+
           <img
             src="/logo/job4me_transparent.png"
             alt="Job4Me Logo"
@@ -25,56 +37,155 @@
           />
 
           <div class="brand-text">
-            <h1>Job4Me Newcastle</h1>
 
-            <p class="eyebrow">ATTENDANCE</p>
+            <h1>
+              Job4Me Newcastle
+            </h1>
+
+            <p class="eyebrow">
+              ATTENDANCE
+            </p>
 
             <p class="subtitle">
               Enter your learner number to check in or check out.
             </p>
+
           </div>
+
         </div>
 
-        <div class="status-pill" id="systemStatus">Ready</div>
+        <div
+          class="status-pill"
+          id="systemStatus"
+        >
+          Ready
+        </div>
+
       </header>
+
 
       <!-- Main attendance card -->
 
       <section class="scanner-card">
-        <div class="scanner-heading">
-          <h2>Welcome!</h2>
 
-          <p>Please enter your learner number.</p>
+        <div class="scanner-heading">
+
+          <h2>
+            Welcome!
+          </h2>
+
+          <p>
+            Please enter your learner number.
+          </p>
+
         </div>
+
 
         <!-- Learner ID display -->
 
-        <div class="learner-id-display" aria-label="Learner ID">
-          <span class="id-prefix"> J4M_ </span>
+        <div
+          class="learner-id-display"
+          aria-label="Learner ID"
+        >
 
-          <span class="id-number" id="enteredDigits"> _ _ </span>
+          <span
+            class="id-prefix"
+            id="idPrefix"
+          >
+            J4M_
+          </span>
+
+          <span
+            class="id-number"
+            id="enteredDigits"
+          >
+            ___
+          </span>
+
         </div>
+
 
         <!-- Number pad -->
 
-        <div class="number-pad" id="numberPad">
-          <button type="button" class="number-button" data-number="1">1</button>
+        <div
+          class="number-pad"
+          id="numberPad"
+        >
 
-          <button type="button" class="number-button" data-number="2">2</button>
+          <button
+            type="button"
+            class="number-button"
+            data-number="1"
+          >
+            1
+          </button>
 
-          <button type="button" class="number-button" data-number="3">3</button>
+          <button
+            type="button"
+            class="number-button"
+            data-number="2"
+          >
+            2
+          </button>
 
-          <button type="button" class="number-button" data-number="4">4</button>
+          <button
+            type="button"
+            class="number-button"
+            data-number="3"
+          >
+            3
+          </button>
 
-          <button type="button" class="number-button" data-number="5">5</button>
 
-          <button type="button" class="number-button" data-number="6">6</button>
+          <button
+            type="button"
+            class="number-button"
+            data-number="4"
+          >
+            4
+          </button>
 
-          <button type="button" class="number-button" data-number="7">7</button>
+          <button
+            type="button"
+            class="number-button"
+            data-number="5"
+          >
+            5
+          </button>
 
-          <button type="button" class="number-button" data-number="8">8</button>
+          <button
+            type="button"
+            class="number-button"
+            data-number="6"
+          >
+            6
+          </button>
 
-          <button type="button" class="number-button" data-number="9">9</button>
+
+          <button
+            type="button"
+            class="number-button"
+            data-number="7"
+          >
+            7
+          </button>
+
+          <button
+            type="button"
+            class="number-button"
+            data-number="8"
+          >
+            8
+          </button>
+
+          <button
+            type="button"
+            class="number-button"
+            data-number="9"
+          >
+            9
+          </button>
+
 
           <button
             type="button"
@@ -84,7 +195,13 @@
             Clear
           </button>
 
-          <button type="button" class="number-button" data-number="0">0</button>
+          <button
+            type="button"
+            class="number-button"
+            data-number="0"
+          >
+            0
+          </button>
 
           <button
             type="button"
@@ -94,34 +211,102 @@
           >
             ⌫
           </button>
+
         </div>
+
 
         <!-- Submit -->
 
-        <button id="submitButton" class="submit-button" type="button">
+        <button
+          id="submitButton"
+          class="submit-button"
+          type="button"
+        >
           Check in / out
         </button>
 
+
         <!-- Logout -->
 
-        <button id="logoutButton" class="logout-button" type="button">
+        <button
+          id="logoutButton"
+          class="logout-button"
+          type="button"
+        >
           Log out
         </button>
+
+
+        <!-- How to use -->
+
+        <details class="howto-card">
+
+          <summary>
+            How to use
+          </summary>
+
+          <div class="howto-content">
+
+            <p>
+              Enter the numbers after
+              <strong>J4M_</strong>.
+            </p>
+
+            <p>
+              Example:
+              <strong>J4M_001</strong>
+              → enter
+              <strong>001</strong>.
+            </p>
+
+            <p>
+              Press
+              <strong>Check in / out</strong>
+              to record attendance.
+            </p>
+
+          </div>
+
+        </details>
+
       </section>
+
 
       <!-- Result popup -->
 
-      <section class="result-card hidden" id="resultCard" aria-live="polite">
-        <div class="result-icon" id="resultIcon">✓</div>
+      <section
+        class="result-card hidden"
+        id="resultCard"
+        aria-live="polite"
+      >
+
+        <div
+          class="result-icon"
+          id="resultIcon"
+        >
+          ✓
+        </div>
 
         <div class="result-content">
-          <h2 id="resultTitle">Attendance updated</h2>
 
-          <p class="result-name" id="resultName"></p>
+          <h2 id="resultTitle">
+            Attendance updated
+          </h2>
 
-          <p class="result-detail" id="resultDetail"></p>
+          <p
+            class="result-name"
+            id="resultName"
+          ></p>
+
+          <p
+            class="result-detail"
+            id="resultDetail"
+          ></p>
+
         </div>
+
       </section>
+
     </main>
 
     <script src="script.js"></script>
